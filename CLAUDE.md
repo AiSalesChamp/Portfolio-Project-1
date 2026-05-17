@@ -2,53 +2,34 @@
 
 Guidance for Claude Code (and other AI assistants) working in this repository.
 
-## Repository status
+## Overview
 
-**This repository is currently empty.** There are no source files, no commits on
-`main`, and no build/test tooling yet. The only concrete fact about the project
-so far is its name (`Portfolio-Project-1`) and owner (`AiSalesChamp`).
+A single-purpose shell utility: `install.sh` installs the official
+[massCode](https://github.com/massCodeIO/massCode) desktop AppImage on
+Debian/Ubuntu Linux. There is no application server or deployment target —
+the deliverable is a script the user runs on their own machine.
 
-When you start work here, the first thing to do is determine — by asking the
-user or by reading whatever files have just been added — what the project
-actually is. Do **not** infer a stack, framework, or architecture from the
-repository name alone. Update this file as soon as the real shape of the
-project is known.
+## Project layout
 
-## What to fill in once code exists
+- `install.sh` — the installer (idempotent: safe to re-run). Bump `VERSION`
+  and `SHA256` near the top to track a new massCode release.
+- `README.md` — usage, the list of unrelated lookalike packages to avoid,
+  cleanup of conflicting installs, and troubleshooting.
+- `CLAUDE.md` — this file.
 
-Replace the sections below with concrete, verified information. Delete any
-section that does not apply rather than leaving placeholder text.
+## Common commands
 
-### Overview
-- One or two sentences describing what the project does and who it is for.
-- Production URL / deployment target, if any.
+- Run the installer: `bash install.sh`
+- Syntax/lint the script: `bash -n install.sh` (or `shellcheck install.sh`)
 
-### Tech stack
-- Language(s) and runtime versions (record exact versions from `.nvmrc`,
-  `package.json` `engines`, `pyproject.toml`, `go.mod`, etc.).
-- Framework(s) and major libraries.
-- Database / external services.
-- Package manager (npm / pnpm / yarn / uv / poetry / cargo / …).
+There is no build, dependency install, or automated test suite.
 
-### Project layout
-- Top-level directories and what lives in each.
-- Where entry points are (e.g. `src/main.ts`, `app/page.tsx`, `cmd/server`).
-- Where tests live and the naming convention used.
+## Conventions
 
-### Common commands
-Document the exact commands the user runs locally. Examples to verify and
-record:
-- Install dependencies
-- Run the dev server
-- Run tests (and how to run a single test)
-- Run the linter / formatter / type checker
-- Build for production
-
-### Conventions
-- Code style rules that aren't enforced by tooling.
-- Naming patterns (files, components, exports).
-- Commit message style, if any (Conventional Commits, etc.).
-- Anything that has bitten contributors before and is worth flagging.
+- Keep `install.sh` as bash with `set -euo pipefail`, idempotent, and never
+  hardcode a username — derive paths from `$HOME`.
+- When changing the pinned massCode version, update `VERSION` **and** the
+  matching `SHA256` together, and reflect the version in `README.md`.
 
 ## Workflow for AI assistants
 
