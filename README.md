@@ -17,11 +17,20 @@ bash install.sh
 
 The script:
 
-1. Installs prerequisites (`libfuse2`/`libfuse2t64`, `wget`) via `apt`.
+1. Installs prerequisites (`wget`; `libfuse2`/`libfuse2t64` best-effort) via `apt`.
 2. Downloads `massCode-5.5.0.AppImage` to `~/Applications` (skipped if present).
 3. Verifies the SHA-256 checksum before continuing.
-4. Marks it executable.
-5. Creates a `masscode` symlink in `~/.local/bin` and a desktop menu entry.
+4. **Extracts** the AppImage to `~/Applications/massCode-5.5.0.AppDir` so it
+   runs **without FUSE** (fixes the Ubuntu 24.04 "AppImages require FUSE" /
+   `libfuse` errors).
+5. Creates a `masscode` launcher in `~/.local/bin` and a desktop menu entry.
+   The launcher auto-adds `--no-sandbox` if Electron's setuid sandbox isn't
+   correctly configured (common for user-extracted apps on Ubuntu 24.04).
+
+> **Why no FUSE?** Ubuntu 24.04+ only ships `libfuse2t64`, and AppImages
+> often still fail to mount. `--appimage-extract` is performed by the
+> AppImage runtime itself and never touches FUSE, so running the extracted
+> copy sidesteps the problem entirely.
 
 Then launch from your app menu or run `masscode`. On first launch, create or
 open a vault, e.g. `~/Documents/massCode-vault`.
@@ -52,10 +61,11 @@ Then re-run `bash install.sh` to restore the symlink to the AppImage.
 
 | Symptom | Fix |
 |---------|-----|
-| `dlopen(): error loading libfuse` | Install `libfuse2` (or `libfuse2t64` on Ubuntu 24.04+); `sudo apt install fuse3` as fallback |
-| AppImage won't start / no window | Run from a terminal and read the errors; confirm it is executable |
+| `dlopen(): error loading libfuse` / `AppImages require FUSE` | Already handled — `install.sh` runs the **extracted** app, not the raw AppImage. Re-run `bash install.sh`, then launch with `masscode` (not the `.AppImage` directly). |
+| `The SUID sandbox helper binary ... is not configured correctly` | Already handled — the `masscode` launcher auto-adds `--no-sandbox`. Run `masscode`, not `AppRun`/`.AppImage` directly. |
+| AppImage won't start / no window | Run `masscode` from a terminal and read the errors |
 | `masscode --help` shows a Python CLI | Wrong binary on PATH — see Cleanup above |
-| Blank window on Wayland | `GDK_BACKEND=x11 ~/Applications/massCode-5.5.0.AppImage` |
-| Upgrade later | Edit `VERSION`/`SHA256` in `install.sh` and re-run |
+| Blank window on Wayland | `GDK_BACKEND=x11 masscode` |
+| Upgrade later | Edit `VERSION`/`SHA256` in `install.sh`, delete `~/Applications/massCode-*.AppDir`, and re-run |
 
 Docs: <https://masscode.io/documentation/>
