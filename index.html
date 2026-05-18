@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Apartment Measurement Dashboard</title>
+<style>
+  :root{
+    --bg:#0e1116; --card:#171c24; --card2:#1f2530; --line:#2b333f;
+    --txt:#e8edf4; --mut:#93a0b4; --accent:#4f9dff; --accent2:#2bd4a7;
+    --warn:#ffb454;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--txt);
+    font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding:env(safe-area-inset-top) 0 40px;
+  }
+  header{
+    position:sticky;top:0;z-index:20;background:rgba(14,17,22,.95);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:14px 16px;
+  }
+  h1{margin:0;font-size:18px;letter-spacing:.3px}
+  .sub{color:var(--mut);font-size:12.5px;margin-top:3px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button,select{
+    font:600 13px/1 inherit;color:var(--txt);background:var(--card2);
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    cursor:pointer;appearance:none;
+  }
+  button:active{transform:scale(.97)}
+  .primary{background:var(--accent);border-color:var(--accent);color:#04101f}
+  select{padding-right:28px;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 14px) 50%,calc(100% - 9px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+  main{max-width:760px;margin:0 auto;padding:16px}
+  .prog{height:6px;background:var(--card2);border-radius:99px;overflow:hidden;margin:14px 0 4px}
+  .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .25s}
+  .progtxt{color:var(--mut);font-size:12px;margin-bottom:18px}
+  .room{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+  .rhead{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
+  .rhead .ico{font-size:20px}
+  .rhead h2{margin:0;font-size:15.5px;flex:1}
+  .rhead .cnt{color:var(--mut);font-size:12px;background:var(--card2);padding:4px 9px;border-radius:99px}
+  .rhead .chev{color:var(--mut);transition:transform .2s}
+  .room.collapsed .chev{transform:rotate(-90deg)}
+  .room.collapsed .rbody{display:none}
+  .rbody{padding:4px 12px 14px}
+  .row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .row label{flex:1;font-size:14px;color:var(--txt)}
+  .row label small{display:block;color:var(--mut);font-size:11.5px;font-weight:400}
+  .row input[type=text]{flex:1;min-width:0;background:transparent;border:0;color:var(--txt);font:14px inherit;border-bottom:1px dashed var(--line);padding:4px 2px}
+  .val{display:flex;align-items:center;gap:6px}
+  .val input{
+    width:88px;text-align:right;background:var(--card2);border:1px solid var(--line);
+    color:var(--txt);font:600 15px inherit;border-radius:9px;padding:10px 10px;
+  }
+  .val input.filled{border-color:var(--accent2);background:#16241f}
+  .val .u{color:var(--mut);font-size:12px;width:26px}
+  .del{background:transparent;border:0;color:var(--mut);font-size:18px;padding:6px 8px;line-height:1}
+  .addrow{margin:10px 4px 2px;background:transparent;border:1px dashed var(--line);color:var(--mut);width:calc(100% - 8px);padding:11px}
+  .note{width:100%;margin-top:10px;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font:14px inherit;resize:vertical;min-height:46px}
+  footer{max-width:760px;margin:24px auto 0;padding:0 16px;color:var(--mut);font-size:12px;text-align:center}
+  .saved{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(80px);background:var(--accent2);color:#04150f;font-weight:700;font-size:13px;padding:10px 18px;border-radius:99px;transition:transform .25s;z-index:50}
+  .saved.show{transform:translateX(-50%) translateY(0)}
+  @media print{
+    header .bar,.del,.addrow,.note::placeholder{display:none}
+    body{background:#fff;color:#000}
+    .room,.card{break-inside:avoid}
+    .val input{border:1px solid #999}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>📐 Apartment Measurement Dashboard</h1>
+  <div class="sub">Auto-saves as you type. Tap a room to collapse. Built for measuring on your phone.</div>
+  <div class="bar">
+    <span style="display:flex;align-items:center;gap:6px;color:var(--mut);font-size:13px">Units:</span>
+    <select id="unit">
+      <option value="in">inches</option>
+      <option value="ft" selected>feet</option>
+      <option value="cm">cm</option>
+      <option value="m">meters</option>
+    </select>
+    <button id="expand">Expand all</button>
+    <button id="csv">Export CSV</button>
+    <button id="print" onclick="window.print()">Print / PDF</button>
+    <button id="reset">Reset</button>
+  </div>
+</header>
+
+<main>
+  <div class="prog"><i id="bar"></i></div>
+  <div class="progtxt" id="ptxt">0 of 0 measurements filled</div>
+  <div id="rooms"></div>
+  <footer>Data stays on this device (browser local storage). Export CSV before clearing or switching phones.</footer>
+</main>
+<div class="saved" id="toast">Saved ✓</div>
+
+<script>
+// ---- Default layout derived from the floor-plan sketch ----
+const DEFAULT = [
+  {id:"unit", ico:"🏠", name:"Whole Unit", note:"",
+   fields:[
+    {l:"Overall length (entry → far wall)"},
+    {l:"Overall width"},
+    {l:"Ceiling height"},
+    {l:"Entry door width", s:"clear opening — matters for furniture"},
+    {l:"Entry door → first wall"},
+   ]},
+  {id:"entry", ico:"🚪", name:"Entry", note:"",
+   fields:[
+    {l:"Entry alcove width"},
+    {l:"Entry alcove depth"},
+    {l:"Coat / shoe nook width", s:"the small box by the door"},
+   ]},
+  {id:"kitchen", ico:"🍳", name:"Kitchen", note:"",
+   fields:[
+    {l:"Kitchen run length"},
+    {l:"Counter depth"},
+    {l:"Counter height"},
+    {l:"Upper cabinet clearance"},
+    {l:"Fridge gap (width)"},
+    {l:"Stove / range width"},
+    {l:"Walkway in front of counter"},
+   ]},
+  {id:"desk", ico:"🖥️", name:"Workspace / Desk", note:"M = monitor, PC = tower, C = chair",
+   fields:[
+    {l:"Desk width"},
+    {l:"Desk depth"},
+    {l:"Desk height"},
+    {l:"Wall length behind desk"},
+    {l:"Monitor 1 width"},
+    {l:"Monitor 2 width"},
+    {l:"PC tower spot (W × D — note)", s:"floor space beside desk"},
+    {l:"Chair clearance behind desk"},
+   ]},
+  {id:"living", ico:"🛋️", name:"Living Area", note:"",
+   fields:[
+    {l:"Living area length"},
+    {l:"Living area width"},
+    {l:"Window width"},
+    {l:"Window height"},
+    {l:"Window sill height from floor"},
+    {l:"Free wall length (for sofa/TV)"},
+   ]},
+  {id:"closet", ico:"🚪", name:"Closet", note:"",
+   fields:[
+    {l:"Closet width"},
+    {l:"Closet depth"},
+    {l:"Closet door / opening width"},
+    {l:"Rod height"},
+   ]},
+  {id:"bedroom", ico:"🛏️", name:"Bedroom", note:"",
+   fields:[
+    {l:"Bedroom length"},
+    {l:"Bedroom width"},
+    {l:"Bed wall length"},
+    {l:"Bedroom door width"},
+    {l:"Window width"},
+    {l:"Window height"},
+    {l:"Clearance around bed"},
+   ]},
+  {id:"bath", ico:"🛁", name:"Bathroom", note:"",
+   fields:[
+    {l:"Bathroom length"},
+    {l:"Bathroom width"},
+    {l:"Bathroom door width"},
+    {l:"Vanity width"},
+    {l:"Tub / shower length"},
+   ]},
+  {id:"doors", ico:"📏", name:"Doors & Windows (extra)", note:"Anything not captured above",
+   fields:[
+    {l:"Interior door A — width"},
+    {l:"Interior door B — width"},
+    {l:"Extra window — W × H (note)"},
+   ]},
+];
+
+const KEY="apt-measure-v1";
+const $=s=>document.querySelector(s);
+let state=load();
+
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY));
+    if(s&&s.rooms) return s;
+  }catch(e){}
+  return {unit:"ft", collapsed:{}, rooms:DEFAULT.map(r=>({
+    id:r.id,ico:r.ico,name:r.name,note:r.note,
+    fields:r.fields.map(f=>({l:f.l,s:f.s||"",v:""}))
+  }))};
+}
+let saveT;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{
+    localStorage.setItem(KEY,JSON.stringify(state));
+    const t=$("#toast");t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),900);
+  },350);
+  progress();
+}
+
+function progress(){
+  let tot=0,fill=0;
+  state.rooms.forEach(r=>r.fields.forEach(f=>{tot++;if(String(f.v).trim())fill++}));
+  $("#bar").style.width=(tot?fill/tot*100:0)+"%";
+  $("#ptxt").textContent=`${fill} of ${tot} measurements filled`;
+}
+
+function render(){
+  $("#unit").value=state.unit;
+  const wrap=$("#rooms");wrap.innerHTML="";
+  state.rooms.forEach((room,ri)=>{
+    const filled=room.fields.filter(f=>String(f.v).trim()).length;
+    const col=state.collapsed[room.id]?" collapsed":"";
+    const el=document.createElement("section");
+    el.className="room"+col;
+    el.innerHTML=`
+      <div class="rhead" data-toggle="${room.id}">
+        <span class="ico">${room.ico}</span>
+        <h2>${esc(room.name)}</h2>
+        <span class="cnt">${filled}/${room.fields.length}</span>
+        <span class="chev">▾</span>
+      </div>
+      <div class="rbody"></div>`;
+    const body=el.querySelector(".rbody");
+    room.fields.forEach((f,fi)=>{
+      const r=document.createElement("div");r.className="row";
+      r.innerHTML=`
+        <label>${esc(f.l)}${f.s?`<small>${esc(f.s)}</small>`:""}</label>
+        <span class="val">
+          <input type="number" inputmode="decimal" step="any"
+            value="${esc(f.v)}" placeholder="—"
+            class="${String(f.v).trim()?'filled':''}"
+            data-r="${ri}" data-f="${fi}">
+          <span class="u">${state.unit}</span>
+        </span>
+        <button class="del" title="Remove" data-del="${ri}:${fi}">✕</button>`;
+      body.appendChild(r);
+    });
+    const add=document.createElement("button");
+    add.className="addrow";add.textContent="+ Add measurement";
+    add.dataset.add=ri;body.appendChild(add);
+    const note=document.createElement("textarea");
+    note.className="note";note.placeholder="Notes for "+room.name+"…";
+    note.value=room.note||"";note.dataset.note=ri;body.appendChild(note);
+    wrap.appendChild(el);
+  });
+  progress();
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.r!==undefined){
+    state.rooms[t.dataset.r].fields[t.dataset.f].v=t.value;
+    t.classList.toggle("filled",!!t.value.trim());
+    const head=t.closest(".room").querySelector(".cnt");
+    const rm=state.rooms[t.dataset.r];
+    head.textContent=rm.fields.filter(f=>String(f.v).trim()).length+"/"+rm.fields.length;
+    save();
+  }
+  if(t.dataset.note!==undefined){state.rooms[t.dataset.note].note=t.value;save();}
+});
+document.addEventListener("click",e=>{
+  const t=e.target;
+  const tog=t.closest("[data-toggle]");
+  if(tog){const id=tog.dataset.toggle;state.collapsed[id]=!state.collapsed[id];
+    tog.closest(".room").classList.toggle("collapsed");save();return;}
+  if(t.dataset.add!==undefined){
+    const name=prompt("Measurement name?");if(!name)return;
+    state.rooms[t.dataset.add].fields.push({l:name,s:"",v:""});save();render();return;}
+  if(t.dataset.del){
+    const [ri,fi]=t.dataset.del.split(":").map(Number);
+    if(confirm("Remove this measurement?")){
+      state.rooms[ri].fields.splice(fi,1);save();render();}return;}
+});
+$("#unit").addEventListener("change",e=>{state.unit=e.target.value;save();render();});
+$("#expand").addEventListener("click",()=>{
+  const anyOpen=state.rooms.some(r=>!state.collapsed[r.id]);
+  state.rooms.forEach(r=>state.collapsed[r.id]=anyOpen);
+  $("#expand").textContent=anyOpen?"Expand all":"Collapse all";
+  save();render();
+});
+$("#reset").addEventListener("click",()=>{
+  if(confirm("Erase all measurements and start over?")){
+    localStorage.removeItem(KEY);state=load();render();}
+});
+$("#csv").addEventListener("click",()=>{
+  let rows=[["Room","Measurement","Value","Unit","Note"]];
+  state.rooms.forEach(r=>{
+    r.fields.forEach(f=>rows.push([r.name,f.l,f.v,f.v?state.unit:"",""]));
+    if(r.note)rows.push([r.name,"(note)","","",r.note]);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="apartment-measurements.csv";a.click();
+});
+render();
+</script>
+</body>
+</html>
