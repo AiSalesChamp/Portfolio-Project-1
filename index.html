@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lift Loop Solutions — Local-First AI for the Trades</title>
+<meta name="description" content="Lift Loop Solutions ships roofing companies a sealed, on-premise AI appliance and runs five proven workflows that make them money and save them time.">
+<meta property="og:title" content="Lift Loop Solutions — Local-First AI for the Trades">
+<meta property="og:description" content="The easiest check they write all month. On-premise AI for roofing companies.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08090b;
+    --bg-2:#0c0f14;
+    --smoke:#13171e;
+    --smoke-2:#1a1f28;
+    --line:#262d38;
+    --line-soft:#1c222b;
+    --text:#e8edf3;
+    --dim:#9aa6b3;
+    --mute:#5f6975;
+    --neon:#34a9ff;
+    --neon-bright:#73d2ff;
+    --neon-deep:#1278d6;
+    --glow:rgba(52,169,255,.45);
+    --glow-soft:rgba(52,169,255,.14);
+    --ok:#3ddc84;
+    --warn:#ffb454;
+    --display:'Sora',sans-serif;
+    --body:'IBM Plex Sans',sans-serif;
+    --mono:'IBM Plex Mono',monospace;
+    --maxw:1160px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    font-weight:300;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* atmospheric layers */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(900px 600px at 12% -5%, rgba(52,169,255,.10), transparent 60%),
+      radial-gradient(800px 700px at 95% 8%, rgba(52,169,255,.06), transparent 55%),
+      radial-gradient(1000px 800px at 50% 120%, rgba(52,169,255,.05), transparent 60%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+    background-size:64px 64px;opacity:.4;
+    mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 75%);
+  }
+  .wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+  /* progress + nav */
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--neon-deep),var(--neon-bright));z-index:50;box-shadow:0 0 12px var(--glow)}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 28px;backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(8,9,11,.85),transparent)}
+  .brand{font-family:var(--display);font-weight:700;letter-spacing:.04em;font-size:15px;display:flex;align-items:center;gap:9px}
+  .brand .dot{width:9px;height:9px;border-radius:2px;background:var(--neon);box-shadow:0 0 12px var(--glow);transform:rotate(45deg)}
+  .topbar .tag{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.08em}
+
+  /* typography */
+  h1,h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.08;letter-spacing:-.01em}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--neon);margin-bottom:18px;display:inline-flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:linear-gradient(90deg,var(--neon),transparent)}
+  .neon{color:var(--neon-bright)}
+  .strike{color:var(--mute);text-decoration:line-through;text-decoration-color:var(--neon-deep)}
+  section{padding:120px 0;position:relative}
+  .lead{font-size:19px;color:var(--dim);font-weight:300;max-width:680px}
+
+  /* hero */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:80px}
+  .hero h1{font-size:clamp(44px,8vw,108px);font-weight:800;letter-spacing:-.03em}
+  .hero h1 .line{display:block;overflow:hidden}
+  .hero h1 .line span{display:block;transform:translateY(105%);animation:rise .9s cubic-bezier(.16,1,.3,1) forwards}
+  .hero h1 .line:nth-child(2) span{animation-delay:.12s}
+  .hero h1 .line:nth-child(3) span{animation-delay:.24s}
+  @keyframes rise{to{transform:translateY(0)}}
+  .hero .sub{margin-top:34px;font-size:21px;color:var(--dim);max-width:620px;opacity:0;animation:fade 1s ease .6s forwards}
+  .hero .sub b{color:var(--text);font-weight:500}
+  .hero .meta{margin-top:54px;display:flex;flex-wrap:wrap;gap:14px;opacity:0;animation:fade 1s ease .85s forwards}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);padding:9px 15px;border-radius:100px;background:rgba(255,255,255,.015)}
+  .chip b{color:var(--neon-bright);font-weight:500}
+  @keyframes fade{to{opacity:1}}
+  .scrollcue{position:absolute;bottom:34px;left:28px;font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.18em;opacity:0;animation:fade 1s ease 1.1s forwards}
+  .scrollcue::after{content:"";display:block;width:1px;height:34px;background:linear-gradient(var(--neon),transparent);margin-top:10px;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+  /* section heads */
+  .shead{max-width:760px;margin-bottom:54px}
+  .shead h2{font-size:clamp(30px,4.4vw,52px)}
+  .shead p{margin-top:18px;color:var(--dim);font-size:18px}
+
+  /* pillars */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .pillar{background:linear-gradient(160deg,var(--smoke),var(--bg-2));border:1px solid var(--line);border-radius:16px;padding:32px 28px;position:relative;overflow:hidden}
+  .pillar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--neon),transparent);opacity:.5}
+  .pillar .n{font-family:var(--mono);font-size:12px;color:var(--neon);letter-spacing:.1em}
+  .pillar h3{font-size:23px;margin:16px 0 12px}
+  .pillar p{color:var(--dim);font-size:15px}
+
+  /* stat row */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .stat{background:var(--bg-2);padding:34px 26px}
+  .stat .big{font-family:var(--display);font-weight:800;font-size:clamp(34px,4vw,50px);color:var(--neon-bright);letter-spacing:-.02em;line-height:1}
+  .stat .lbl{margin-top:12px;color:var(--dim);font-size:14px}
+  .stat .src{margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.05em}
+
+  /* problem cards */
+  .pgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+  .card{background:var(--smoke);border:1px solid var(--line);border-radius:16px;padding:30px}
+  .card.dark{background:var(--bg-2)}
+  .card h3{font-size:21px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .card h3 .ic{width:30px;height:30px;border-radius:8px;background:var(--glow-soft);border:1px solid var(--line);display:grid;place-items:center;color:var(--neon-bright);font-family:var(--mono);font-size:13px}
+  .card p{color:var(--dim);font-size:15px}
+  .card ul{list-style:none;margin-top:8px}
+  .card li{color:var(--dim);font-size:14.5px;padding:9px 0;border-top:1px solid var(--line-soft);display:flex;gap:10px}
+  .card li:first-child{border-top:none}
+  .card li b{color:var(--text);font-weight:500}
+  .card li .x{color:var(--neon);font-family:var(--mono);flex-shrink:0}
+
+  /* market funnel */
+  .market{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .funnel{display:flex;flex-direction:column;gap:12px}
+  .tam{border:1px solid var(--line);border-radius:14px;padding:24px 26px;background:linear-gradient(120deg,var(--smoke),var(--bg-2));position:relative}
+  .tam .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--neon);text-transform:uppercase}
+  .tam .v{font-family:var(--display);font-weight:800;font-size:34px;margin:6px 0 4px;letter-spacing:-.02em}
+  .tam .d{color:var(--dim);font-size:14px}
+  .tam.sam{margin-left:7%}
+  .tam.som{margin-left:14%;border-color:var(--neon-deep);box-shadow:0 0 40px -18px var(--glow)}
+  .tam.som .v{color:var(--neon-bright)}
+
+  /* product / appliance */
+  .appliance{display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:center}
+  .box3d{aspect-ratio:1/.86;border-radius:20px;background:
+      radial-gradient(120% 120% at 30% 20%,#1d2a3a,#0b0f15 70%);
+    border:1px solid var(--line);position:relative;display:grid;place-items:center;overflow:hidden}
+  .box3d::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(52,169,255,.10) 50%,transparent 60%)}
+  .unit{width:62%;aspect-ratio:1/1;border-radius:16px;
+    background:linear-gradient(150deg,#2a3340,#11151c);
+    border:1px solid #36404e;position:relative;
+    box-shadow:0 30px 70px -30px #000, inset 0 1px 0 rgba(255,255,255,.06);
+    display:grid;place-items:center}
+  .unit::after{content:"";position:absolute;inset:14px;border-radius:10px;
+    background:repeating-linear-gradient(90deg,#0c1016 0 2px,#161c25 2px 5px);opacity:.5}
+  .unit .core{position:relative;z-index:2;width:34%;aspect-ratio:1/1;border-radius:50%;
+    background:radial-gradient(circle,var(--neon-bright),var(--neon-deep));
+    box-shadow:0 0 50px var(--glow);animation:throb 3s ease-in-out infinite}
+  @keyframes throb{0%,100%{box-shadow:0 0 40px var(--glow);transform:scale(1)}50%{box-shadow:0 0 70px var(--glow);transform:scale(1.06)}}
+  .badge{position:absolute;bottom:16px;left:16px;font-family:var(--mono);font-size:10.5px;color:var(--neon-bright);letter-spacing:.1em;background:rgba(8,9,11,.7);border:1px solid var(--line);padding:6px 11px;border-radius:8px}
+  .spec{font-family:var(--mono);font-size:13px;color:var(--dim);display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+  .spec b{color:var(--text)}
+  .spec .hl{color:var(--neon-bright)}
+
+  /* workflows */
+  .flows{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .flow{background:var(--smoke);border:1px solid var(--line);border-radius:14px;padding:26px;transition:border-color .3s,transform .3s}
+  .flow:hover{border-color:var(--neon-deep);transform:translateY(-3px)}
+  .flow .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+  .flow .num{font-family:var(--mono);font-size:12px;color:var(--mute)}
+  .flow .roi{font-family:var(--mono);font-size:11px;color:var(--neon-bright);border:1px solid var(--neon-deep);padding:4px 9px;border-radius:6px;background:var(--glow-soft)}
+  .flow h3{font-size:19px;margin-bottom:9px}
+  .flow p{color:var(--dim);font-size:14.5px}
+
+  /* model / economics */
+  .econ{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .moneyrow{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .mr{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line-soft)}
+  .mr:last-child{border-bottom:none;background:linear-gradient(90deg,var(--glow-soft),transparent)}
+  .mr .l{font-size:15px;color:var(--text)}
+  .mr .l span{display:block;font-size:12.5px;color:var(--mute);font-family:var(--mono);margin-top:3px}
+  .mr .r{font-family:var(--display);font-weight:700;font-size:20px}
+  .mr .r.pos{color:var(--neon-bright)}
+  .mr .r.once{color:var(--dim);font-weight:500;font-size:16px}
+
+  .roibox{background:linear-gradient(150deg,var(--smoke),var(--bg-2));border:1px solid var(--neon-deep);border-radius:16px;padding:30px;box-shadow:0 0 60px -30px var(--glow)}
+  .roibox h3{font-size:20px;margin-bottom:8px}
+  .roibox .sub{color:var(--dim);font-size:14px;margin-bottom:22px}
+  .balance{display:flex;align-items:center;gap:18px;margin:18px 0}
+  .balance .side{flex:1;text-align:center;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2)}
+  .balance .side .v{font-family:var(--display);font-weight:800;font-size:26px}
+  .balance .side .v.cost{color:var(--dim)}
+  .balance .side .v.val{color:var(--neon-bright)}
+  .balance .side .k{font-family:var(--mono);font-size:10.5px;color:var(--mute);letter-spacing:.1em;margin-top:6px;text-transform:uppercase}
+  .balance .vs{font-family:var(--mono);color:var(--neon);font-size:13px}
+  .verdict{text-align:center;font-family:var(--mono);font-size:13px;color:var(--neon-bright);letter-spacing:.06em;border-top:1px dashed var(--line);padding-top:18px}
+
+  /* comparison table */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
+  table{width:100%;border-collapse:collapse;min-width:680px}
+  th,td{text-align:left;padding:16px 18px;font-size:14px;border-bottom:1px solid var(--line-soft)}
+  thead th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);background:var(--bg-2)}
+  thead th.us{color:var(--neon-bright)}
+  tbody td:first-child{color:var(--dim)}
+  td.us{background:var(--glow-soft);color:var(--text);font-weight:500}
+  .yes{color:var(--ok)}.no{color:var(--mute)}
+  tbody tr:last-child td{border-bottom:none}
+
+  /* roadmap */
+  .road{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .phase{background:var(--smoke);border:1px solid var(--line);border-radius:14px;padding:22px 18px;position:relative}
+  .phase .p{font-family:var(--mono);font-size:11px;color:var(--neon);letter-spacing:.1em}
+  .phase h4{font-size:16px;margin:10px 0 8px}
+  .phase p{font-size:13px;color:var(--dim)}
+  .phase .when{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
+
+  /* projection bars */
+  .proj{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:end;margin-top:12px}
+  .bar{background:var(--bg-2);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:24px;text-align:center;position:relative}
+  .bar .fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--glow-soft),rgba(52,169,255,.04));border-top:2px solid var(--neon);border-radius:0;z-index:0}
+  .bar .yr{font-family:var(--mono);font-size:12px;color:var(--dim);position:relative;z-index:1}
+  .bar .v{font-family:var(--display);font-weight:800;font-size:30px;color:var(--neon-bright);margin:8px 0 4px;position:relative;z-index:1}
+  .bar .c{font-size:13px;color:var(--dim);position:relative;z-index:1}
+
+  /* ask / close */
+  .close{background:linear-gradient(160deg,var(--smoke),var(--bg-2));border:1px solid var(--line);border-radius:22px;padding:56px;text-align:center;position:relative;overflow:hidden}
+  .close::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 50% 0%,var(--glow-soft),transparent 70%)}
+  .close h2{font-size:clamp(28px,4vw,46px);position:relative}
+  .close p{color:var(--dim);font-size:18px;max-width:620px;margin:20px auto 0;position:relative}
+  .steps{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:36px;position:relative}
+  .step{font-family:var(--mono);font-size:12.5px;color:var(--dim);border:1px solid var(--line);padding:12px 20px;border-radius:100px;background:var(--bg-2)}
+  .step b{color:var(--neon-bright)}
+
+  /* footer / disclaimer */
+  footer{border-top:1px solid var(--line);padding:48px 0 80px;position:relative;z-index:2}
+  .disc{font-size:12.5px;color:var(--mute);max-width:880px;line-height:1.7}
+  .disc b{color:var(--dim)}
+  .srcs{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:22px;line-height:1.9}
+
+  @media(max-width:880px){
+    section{padding:84px 0}
+    .pillars,.flows,.econ,.pgrid,.market,.appliance{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr 1fr}
+    .road{grid-template-columns:1fr 1fr}
+    .proj{grid-template-columns:1fr}
+    .close{padding:36px 24px}
+    .tam.sam,.tam.som{margin-left:0}
+    .topbar .tag{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="progress" id="prog"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> LIFT&nbsp;LOOP</div>
+  <div class="tag">LIFT LOOP SOLUTIONS · LOCAL-FIRST AI</div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow reveal in">Lift Loop Solutions · Local-First AI for the Trades</div>
+    <h1>
+      <span class="line"><span>The easiest check</span></span>
+      <span class="line"><span>they write</span></span>
+      <span class="line"><span>all month.</span></span>
+    </h1>
+    <p class="sub">We ship roofing companies a sealed AI supercomputer that runs their entire operation <b>on their own hardware</b> — then run five proven workflows that make them money and save them time. We only win when they win.</p>
+    <div class="meta">
+      <span class="chip"><b>$24B+</b> fragmented US roofing market</span>
+      <span class="chip"><b>21×</b> more leads won on speed alone</span>
+      <span class="chip"><b>$0</b> of their data ever leaves the building</span>
+    </div>
+  </div>
+  <div class="scrollcue">SCROLL</div>
+</header>
+
+<!-- THESIS / SYMBIOSIS -->
+<section>
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">The Soul of the Business</div>
+      <h2>A symbiotic model, not a subscription trap.</h2>
+      <p>Every incumbent in this market rents software by the seat and profits whether or not the contractor grows. We invert that. Our economics are wired so that we make money only when our customers make more — which makes our retainer the last thing they would ever cancel.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal d1">
+        <div class="n">01</div>
+        <h3>Make them money</h3>
+        <p>The first workflow we deploy — instant lead response — recovers jobs they were already losing to voicemail. Revenue created, not costs cut.</p>
+      </div>
+      <div class="pillar reveal d2">
+        <div class="n">02</div>
+        <h3>Save them time</h3>
+        <p>Estimates, follow-ups, review requests and claim docs that ate evenings and weekends now run themselves on a box humming in the back office.</p>
+      </div>
+      <div class="pillar reveal d3">
+        <div class="n">03</div>
+        <h3>Be the easiest check</h3>
+        <p>When a service visibly prints more revenue than it costs every single month, cancelling it feels insane. That gap is the moat.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section style="background:var(--bg-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">The Problem</div>
+      <h2>A massive, modern-tech-starved industry losing money on the basics.</h2>
+      <p>Roofing is one of the largest trades in America and one of the least digitized. The leading firms fly drones and run AI takeoffs; everyone else still pulls a tape measure — and bleeds revenue at the exact moment a customer is ready to buy.</p>
+    </div>
+    <div class="pgrid">
+      <div class="card reveal d1">
+        <h3><span class="ic">!</span> Leads die in voicemail</h3>
+        <ul>
+          <li><span class="x">→</span><span>The median contractor's first response time is <b>42 minutes</b>; only <b>12%</b> reply within five.</span></li>
+          <li><span class="x">→</span><span>Responding inside 5 minutes makes you <b>21× more likely</b> to qualify the lead, and <b>78%</b> of homeowners hire whoever responds first.</span></li>
+          <li><span class="x">→</span><span><b>27%</b> of inquiries get no response at all; <b>85%</b> who hit voicemail never call back.</span></li>
+        </ul>
+      </div>
+      <div class="card dark reveal d2">
+        <h3><span class="ic">$</span> The incumbents rent you software</h3>
+        <ul>
+          <li><span class="x">→</span><span>AccuLynx starts near <b>$250/mo</b> plus <b>$60–120 per user</b>; ServiceTitan runs <b>$500+/user</b>.</span></li>
+          <li><span class="x">→</span><span>Per-seat pricing punishes you for hiring. Your data lives on <b>their</b> cloud, on <b>their</b> terms.</span></li>
+          <li><span class="x">→</span><span>They hand you a tool. <b>Nobody does the work for you</b> — the estimator still forgets the follow-up.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COST OF DOING NOTHING (stats) -->
+<section>
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">The Cost of Standing Still</div>
+      <h2>Every minute of silence has a price tag.</h2>
+    </div>
+    <div class="stats reveal d1">
+      <div class="stat"><div class="big">391%</div><div class="lbl">conversion lift responding within 60 seconds</div><div class="src">SRC: Velocify / Estatehub 2026</div></div>
+      <div class="stat"><div class="big">15–25%</div><div class="lbl">more proposals closed with structured follow-up</div><div class="src">SRC: HBR / CustomerFlows 2026</div></div>
+      <div class="stat"><div class="big">2–4×</div><div class="lbl">conversion rate of referrals vs. cold leads</div><div class="src">SRC: Estatehub 2026</div></div>
+      <div class="stat"><div class="big">5–7×</div><div class="lbl">cost to win a new customer vs. retain one</div><div class="src">SRC: CustomerFlows 2026</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section style="background:var(--bg-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap market">
+    <div class="reveal">
+      <div class="eyebrow">The Market</div>
+      <h2 style="font-size:clamp(28px,4vw,46px)">Big, fragmented, and wide open.</h2>
+      <p class="lead" style="margin-top:18px">The US roofing market is worth roughly <span class="neon">$34.7B in 2026</span>, growing ~6% a year, with the top three contractors holding under 4% combined share. Replacement and renovation — the recurring, lead-driven work — is ~79% of volume. There is no consolidated technology winner serving the mid-to-large operator who owns their data.</p>
+      <p class="lead" style="margin-top:18px;color:var(--mute);font-size:15px">Beachhead: mid-to-large residential & restoration roofers doing $3M+ in revenue — large enough to feel the pain, small enough to move fast.</p>
+    </div>
+    <div class="funnel reveal d2">
+      <div class="tam"><div class="k">TAM · US Roofing</div><div class="v">$34.7B</div><div class="d">Total US roofing market, 2026 (Mordor Intelligence)</div></div>
+      <div class="tam sam"><div class="k">SAM · Mid–Large Contractors</div><div class="v">~$2.4B</div><div class="d">Software, automation & ops spend by $3M+ firms (illustrative)</div></div>
+      <div class="tam som"><div class="k">SOM · 3-Year Wedge</div><div class="v">$3.6M ARR</div><div class="d">~200 managed accounts — a rounding error of the SAM</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NOW -->
+<section>
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">Why Now</div>
+      <h2>The hardware just crossed the line that makes this possible.</h2>
+      <p>Two years ago, running a capable AI model privately inside a small business required a $30,000+ workstation or a permanent cloud bill. That barrier just collapsed.</p>
+    </div>
+    <div class="pgrid">
+      <div class="card reveal d1">
+        <h3><span class="ic">⚡</span> Private AI got cheap</h3>
+        <p style="margin-bottom:14px">NVIDIA's DGX Spark — a desktop AI supercomputer with 128GB of unified memory running models up to 200B parameters — sells for around <b style="color:var(--neon-bright)">$4,700</b>, on a standard wall outlet.</p>
+        <p style="color:var(--mute);font-size:14px">For the first time, a roofing company can run real AI <b>without sending a single record to the cloud.</b></p>
+      </div>
+      <div class="card dark reveal d2">
+        <h3><span class="ic">◆</span> The stack matured</h3>
+        <p style="margin-bottom:14px">Battle-tested open components — a modern CRM (Twenty), a workflow engine (n8n), and durable agent orchestration — now run on commodity hardware.</p>
+        <p style="color:var(--mute);font-size:14px">We assemble, harden and operate them as one sealed appliance. The customer never touches the plumbing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT: APPLIANCE -->
+<section style="background:var(--bg-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap appliance">
+    <div class="reveal">
+      <div class="box3d">
+        <div class="unit"><div class="core"></div></div>
+        <div class="badge">LIFT LOOP CORE · ON-PREM</div>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div class="eyebrow">The Product</div>
+      <h2 style="font-size:clamp(28px,4vw,44px)">An out-of-the-box AI operation, mailed to their door.</h2>
+      <p class="lead" style="margin:18px 0 26px">We image the entire stack onto the appliance, ship it, and they plug it into one outlet. Their CRM, their data, and their AI all live inside their four walls — we manage it remotely, forever.</p>
+      <div class="spec"><span>Compute</span><b class="hl">NVIDIA GB10 · 128GB unified · ~1 PFLOP</b></div>
+      <div class="spec"><span>Data location</span><b>100% on-premise · nothing exposed to the internet</b></div>
+      <div class="spec"><span>Setup for customer</span><b class="hl">Plug into power. That's it.</b></div>
+      <div class="spec"><span>Management</span><b>Remote patching, monitoring & nightly off-box backups</b></div>
+      <div class="spec"><span>Failure plan</span><b>Pre-imaged spare overnighted · restore from backup</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOWS -->
+<section>
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">Five Workflows That Pay For Themselves</div>
+      <h2>We don't sell software. We deliver outcomes.</h2>
+      <p>Each workflow targets a known, quantified leak in how roofing companies operate. We instrument every one from day one, so the ROI isn't a promise — it's a number on a dashboard.</p>
+    </div>
+    <div class="flows">
+      <div class="flow reveal d1"><div class="top"><span class="num">WORKFLOW 01</span><span class="roi">21× lead capture</span></div><h3>Speed-to-Lead Autopilot</h3><p>New lead from any source gets an AI-qualified text reply in under 60 seconds and books the inspection — beating every competitor still checking voicemail.</p></div>
+      <div class="flow reveal d2"><div class="top"><span class="num">WORKFLOW 02</span><span class="roi">hours → minutes</span></div><h3>Estimate & Proposal Engine</h3><p>Inspection notes, photos and measurements become a branded, ready-to-send proposal automatically — eliminating the nights spent typing quotes.</p></div>
+      <div class="flow reveal d3"><div class="top"><span class="num">WORKFLOW 03</span><span class="roi">+15–25% close</span></div><h3>Never-Drop Follow-Up</h3><p>Durable, multi-touch sequences chase every stalled deal until it closes or dies — recovering the proposals that quietly evaporate today.</p></div>
+      <div class="flow reveal d4"><div class="top"><span class="num">WORKFLOW 04</span><span class="roi">2–4× referral value</span></div><h3>Review & Referral Loop</h3><p>Job complete → automatic Google review request → referral ask. Compounds local SEO and the highest-converting lead source they have.</p></div>
+      <div class="flow reveal d1"><div class="top"><span class="num">WORKFLOW 05</span><span class="roi">category killer</span></div><h3>Storm & Claim Assistant</h3><p>Organizes damage photos, drafts insurance supplement docs and summarizes adjuster correspondence — the insurance-restoration edge incumbents barely touch.</p></div>
+      <div class="flow reveal d2" style="background:linear-gradient(150deg,var(--smoke),var(--bg-2));border-color:var(--neon-deep)"><div class="top"><span class="num">THE COMPOUND EFFECT</span></div><h3 class="neon">More booked jobs. Fewer lost evenings.</h3><p>Five leaks sealed at once. The contractor sees the result in their bank account — and on a live dashboard we control.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section style="background:var(--bg-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">The Model</div>
+      <h2>Capital-light for us. A no-brainer for them.</h2>
+      <p>The hardware is financed by the customer through a third-party equipment partner — they pay a low monthly, we're paid in full up front, and we carry zero lending risk. Our revenue is the recurring managed-service retainer, priced to a fraction of the value it creates.</p>
+    </div>
+    <div class="econ">
+      <div class="reveal d1">
+        <div class="moneyrow">
+          <div class="mr"><div class="l">Integration & provisioning<span>one-time · modest, defensible markup</span></div><div class="r once">~$800</div></div>
+          <div class="mr"><div class="l">Setup & onboarding<span>one-time · waived for first 10</span></div><div class="r once">$1,500</div></div>
+          <div class="mr"><div class="l">Managed-service retainer<span>recurring · value-anchored, tiered</span></div><div class="r pos">$1,500<span style="font-size:12px;color:var(--mute)">/mo</span></div></div>
+          <div class="mr"><div class="l"><b>3-year customer LTV</b><span>retainer + one-times</span></div><div class="r pos">~$56K</div></div>
+        </div>
+        <p style="font-family:var(--mono);font-size:12px;color:var(--mute);margin-top:14px;line-height:1.7">Hardware (~$4,700) is financed by the customer at ~$100/mo through an equipment-finance partner — pass-through, not our revenue, not our risk. Figures illustrative.</p>
+      </div>
+      <div class="reveal d2">
+        <div class="roibox">
+          <h3>The "easiest check" math</h3>
+          <div class="sub">Per customer, per month — why cancelling is irrational.</div>
+          <div class="balance">
+            <div class="side"><div class="v cost">~$1,600</div><div class="k">All-in monthly cost<br>(hardware + service)</div></div>
+            <div class="vs">vs</div>
+            <div class="side"><div class="v val">$3K–12K+</div><div class="k">Monthly value from<br>1–3 recovered jobs</div></div>
+          </div>
+          <div class="verdict">→ 2–7× return, every month, on a live dashboard</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPETITION -->
+<section>
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">Competitive Landscape</div>
+      <h2>Same check. Radically more value.</h2>
+      <p>A 20-seat shop already spends $1,500–2,500/mo on incumbent seats — and still does the work by hand, still doesn't own its data. We occupy the same line item and change what it buys.</p>
+    </div>
+    <div class="tablewrap reveal d1">
+      <table>
+        <thead><tr><th>Capability</th><th>AccuLynx / JobNimbus</th><th>ServiceTitan</th><th>Roofr</th><th class="us">Lift Loop</th></tr></thead>
+        <tbody>
+          <tr><td>Pricing logic</td><td>Per-seat, $250+/mo</td><td>Per-seat, $500+/user</td><td>$99/mo tool</td><td class="us">Flat managed service</td></tr>
+          <tr><td>Data ownership</td><td class="no">Vendor cloud</td><td class="no">Vendor cloud</td><td class="no">Vendor cloud</td><td class="us yes">100% on-premise</td></tr>
+          <tr><td>AI-native workflows</td><td class="no">Bolt-on</td><td class="no">Limited</td><td class="no">Estimating only</td><td class="us yes">Built-in, 5 workflows</td></tr>
+          <tr><td>Done-for-you</td><td class="no">Self-serve</td><td class="no">Self-serve</td><td class="no">Self-serve</td><td class="us yes">We run it for them</td></tr>
+          <tr><td>Hires cost you more</td><td class="no">Yes — per seat</td><td class="no">Yes — per seat</td><td class="no">Yes</td><td class="us yes">No seat penalty</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- GTM / ROADMAP -->
+<section style="background:var(--bg-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">Go-To-Market</div>
+      <h2>Proof first. Then price.</h2>
+      <p>We earn the right to premium pricing by manufacturing undeniable proof with the first ten customers — then let case studies and referrals do the selling in a market where contractors trust each other far more than ads.</p>
+    </div>
+    <div class="road">
+      <div class="phase reveal d1"><div class="p">PHASE 0</div><h4>Narrow</h4><p>One ICP, one hero workflow (speed-to-lead). Build the reference appliance once.</p><div class="when">Mo 0–1</div></div>
+      <div class="phase reveal d2"><div class="p">PHASE 1</div><h4>10 Lighthouses</h4><p>Free service, hardware at cost. Written data + case-study rights up front.</p><div class="when">Mo 1–6</div></div>
+      <div class="phase reveal d3"><div class="p">PHASE 2</div><h4>Synthesize</h4><p>Standardized before/after metrics → ten comparable, publishable case studies.</p><div class="when">Mo 5–7</div></div>
+      <div class="phase reveal d4"><div class="p">PHASE 3</div><h4>Price & Scale</h4><p>Value-anchored retainer. Referral engine. Land paying accounts 11+.</p><div class="when">Mo 7–18</div></div>
+      <div class="phase reveal d4"><div class="p">PHASE 4</div><h4>Land & Expand</h4><p>Multi-location rollouts, tiers, &gt;100% net revenue retention.</p><div class="when">Mo 18+</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTIONS -->
+<section>
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="eyebrow">Illustrative Trajectory</div>
+      <h2>Recurring revenue compounds into an asset.</h2>
+      <p>A capital-light, high-retention managed-service business isn't just cash flow — it's an enterprise that sells for a multiple of recurring revenue. The numbers below are illustrative modeling assumptions, not commitments.</p>
+    </div>
+    <div class="proj">
+      <div class="bar reveal d1" style="min-height:200px"><div class="fill" style="height:18%"></div><div class="yr">YEAR 1</div><div class="v">$360K</div><div class="c">~20 managed accounts</div></div>
+      <div class="bar reveal d2" style="min-height:280px"><div class="fill" style="height:45%"></div><div class="yr">YEAR 2</div><div class="v">$1.35M</div><div class="c">~75 managed accounts</div></div>
+      <div class="bar reveal d3" style="min-height:360px"><div class="fill" style="height:80%"></div><div class="yr">YEAR 3</div><div class="v">$3.6M</div><div class="c">~200 managed accounts</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSE / ASK -->
+<section>
+  <div class="wrap">
+    <div class="close reveal">
+      <div class="eyebrow" style="justify-content:center">The Ask</div>
+      <h2>A capital-efficient path to a category-defining business.</h2>
+      <p>Because the hardware is customer-financed, the model needs little capital to start. An optional <span class="neon">pre-seed of ~$250K</span> accelerates the first lighthouse cohort, builds the reference appliance, and funds early operations — buying speed in a market with no incumbent owner.</p>
+      <div class="steps">
+        <span class="step"><b>Step 1</b> · File the LLC</span>
+        <span class="step"><b>Step 2</b> · Secure the EIN</span>
+        <span class="step"><b>Step 3</b> · Ship the first ten boxes</span>
+        <span class="step"><b>Step 4</b> · Let the case studies sell</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disc"><b>Disclaimers.</b> This document is a planning brief, not an offer of securities, legal advice, or financial advice. All financial figures — LTV, ARR, account counts, pricing, and the trajectory chart — are <b>illustrative modeling assumptions for discussion only</b> and do not represent realized traction, revenue, or commitments; the business is pre-launch with zero customers as presented. Hardware specifications and pricing reflect publicly reported figures as of mid-2026 and are subject to change. Equipment-financing, tax (e.g., Section 179), entity-formation, and software-licensing structures (including the n8n Sustainable Use License and Twenty's AGPL-3.0 terms) should be confirmed with qualified legal, tax, and financing professionals before execution.</p>
+    <p class="srcs">SOURCES · US roofing market: Mordor Intelligence, IBISWorld, ConsumerAffairs (2026) · Speed-to-lead & conversion: Harvard Business Review / MIT Lead Response, Velocify, Estatehub, CustomerFlows (2026) · Incumbent pricing: Roofing Software Guide, AccuLynx, JobNimbus, Roofr (2026) · Hardware: NVIDIA DGX Spark product page & coverage (CNET, Notebookcheck, IntuitionLabs, 2026).</p>
+  </div>
+</footer>
+
+<script>
+  // progress bar
+  const prog=document.getElementById('prog');
+  addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    const p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+    prog.style.width=p+'%';
+  },{passive:true});
+  // reveal on scroll
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>{if(!el.classList.contains('in'))io.observe(el);});
+</script>
+</body>
+</html>
